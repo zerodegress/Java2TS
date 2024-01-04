@@ -79,6 +79,13 @@ class JavaClassToTsTypeTransformer {
         if(allJavaClassTSObjects.contains(javaClass.name)) {
             return TSKnownType("AllJavaClasses['${javaClass.name}']" + "['instanceObject']")
         }
+        if(javaClass.isArray) {
+            return if(javaClass.componentType != null) {
+                TSArray(transformCommonJavaClass(javaClass.componentType))
+            } else {
+                TSArray(TSUnknown())
+            }
+        }
         return when (javaClass) {
             Void.TYPE, Void::class.java -> TSVoid()
             java.lang.String::class.java, String::class.java -> TSString()
@@ -94,13 +101,6 @@ class JavaClassToTsTypeTransformer {
             else -> {
                 when(javaClass.name) {
                     "void" -> TSVoid()
-                    "[Ljava.lang.String;" -> {
-                        if (javaClass.isArray) {
-                            TSArray(TSString())
-                        } else {
-                            TSString()
-                        }
-                    }
                     else -> transformCustomJavaClass(javaClass)
                 }
             }

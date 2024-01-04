@@ -24,5 +24,5 @@ class TestTransform {
     }
 }
 class TestArray {
-    public val strarr: Array<String> = emptyArray()
+    val strarr: Array<String> = emptyArray()
 }
