@@ -91,13 +91,6 @@ class JavaClassToTsTypeTransformer {
             java.lang.String::class.java, String::class.java -> TSString()
             Byte::class.java, Int::class.java , Long::class.java , Short::class.java , Float::class.java , Double::class.java -> TSNumber()
             Boolean::class.java -> TSBoolean()
-            Array::class.java, java.lang.reflect.Array::class.java -> {
-                if(javaClass.componentType != null) {
-                    TSArray(transformCommonJavaClass(javaClass.componentType))
-                } else {
-                    TSArray(TSUnknown())
-                }
-            }
             else -> {
                 when(javaClass.name) {
                     "void" -> TSVoid()
