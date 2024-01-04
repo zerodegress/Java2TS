@@ -16,7 +16,7 @@ class JavaClassToTsTypeTransformer {
             val tsObjects = TSObject(arrayOf(Pair("staticObject", objects.staticObject), Pair("instanceObject", objects.instanceObject)))
             tsTypesStr += "type ${getTSKnownTypeNameOfJavaClassName(name)} = " + tsObjects.generateTS() + System.lineSeparator()
         }
-        var tsInterfaceStr = "export interface AllJavaClasses { "
+        var tsInterfaceStr = "interface AllJavaClasses { "
         for ((name, ) in allJavaClassTSObjects) {
             tsInterfaceStr += "'$name': " + TSKnownType(getTSKnownTypeNameOfJavaClassName(name)).generateTS() + ";"
         }
@@ -75,7 +75,7 @@ class JavaClassToTsTypeTransformer {
         return TSKnownType("AllJavaClasses['${javaClass.name}']" + "['instanceObject']")
     }
 
-    private fun transformCommonJavaClass(javaClass: Class<*>): TSType {
+    fun transformCommonJavaClass(javaClass: Class<*>): TSType {
         if(allJavaClassTSObjects.contains(javaClass.name)) {
             return TSKnownType("AllJavaClasses['${javaClass.name}']" + "['instanceObject']")
         }
@@ -84,7 +84,7 @@ class JavaClassToTsTypeTransformer {
             java.lang.String::class.java, String::class.java -> TSString()
             Byte::class.java, Int::class.java , Long::class.java , Short::class.java , Float::class.java , Double::class.java -> TSNumber()
             Boolean::class.java -> TSBoolean()
-            Array::class.java -> {
+            Array::class.java, java.lang.reflect.Array::class.java -> {
                 if(javaClass.componentType != null) {
                     TSArray(transformCommonJavaClass(javaClass.componentType))
                 } else {
@@ -92,10 +92,16 @@ class JavaClassToTsTypeTransformer {
                 }
             }
             else -> {
-                if(javaClass.name == "void") {
-                    TSVoid()
-                } else {
-                    transformCustomJavaClass(javaClass)
+                when(javaClass.name) {
+                    "void" -> TSVoid()
+                    "[Ljava.lang.String;" -> {
+                        if (javaClass.isArray) {
+                            TSArray(TSString())
+                        } else {
+                            TSString()
+                        }
+                    }
+                    else -> transformCustomJavaClass(javaClass)
                 }
             }
         }

@@ -15,4 +15,14 @@ class TestTransform {
         transformer.transformCustomJavaClass(TestTransform::class.java)
         println(transformer.generateTS())
     }
+
+    @Test
+    fun testArray() {
+        val transformer = JavaClassToTsTypeTransformer()
+        transformer.transformCommonJavaClass(TestArray::class.java)
+        println(transformer.generateTS())
+    }
+}
+class TestArray {
+    public val strarr: Array<String> = emptyArray()
 }
