@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
         val clazz = Class.forName(className, true, loader)
         transformer.transformCustomJavaClass(clazz)
     }
-    Files.write(Path(output), transformer.generateTS().toByteArray(), StandardOpenOption.CREATE)
+    Files.write(Path(output), transformer.generateTS().toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
 }
 
 fun loaderFromJars(jarPaths: Array<String>): ClassLoader {
