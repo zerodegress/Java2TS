@@ -24,7 +24,9 @@ fun main(args: Array<String>) {
     val loader = loaderFromJars(fromJarsStr.split(";").toTypedArray())
     for (className in classNamesStr.split(";")) {
         val clazz = Class.forName(className, true, loader)
-        transformer.transformCustomJavaClass(clazz)
+        if (clazz != null) {
+            transformer.transformCustomJavaClass(clazz)
+        }
     }
     Files.write(Path(output), transformer.generateTS().toByteArray(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
 }
